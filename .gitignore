@@ -1,0 +1,9 @@
+*.pyc
+*.swp
+*.swo
+venv/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
