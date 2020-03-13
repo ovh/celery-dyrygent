@@ -4,6 +4,9 @@ It's designed as celery extension and uses celery as an execution backend.
 Celery-dyrygent is released under modified BSD license. See [license](LICENSE)
 
 ## What is it?
+The reasons behind this project so as the implementation details were described in the following blogpost
+https://www.ovh.com/blog/doing-big-automation-with-celery/
+
 ### What is a DAG workflow?
 DAG is a shortcut for Directed Acyclic Graph.
 While DAG workflow would be any combination of celery primitives:
@@ -51,7 +54,7 @@ That's it, the idea is quite simple.
 
 ## Integration
 ### Initialize workflows
-You need to regiser workflow processor task in your celery app
+You need to register workflow processor task in your celery app
 ```python
 from celery_dyrygent.tasks import register_workflow_processor
 
