@@ -51,7 +51,7 @@ class ResultState(object):
 
     def __inspect(self):
         self.success = self.result.successful()
-        if self.result.state == u'PENDING':
+        if self.result.state == 'PENDING':
             self.state = self.INIT
 
         elif self.result.ready():
@@ -70,7 +70,7 @@ class ResultState(object):
             isinstance(self.result.result, entities.WorkerLostError)
             and (
                 "Worker exited prematurely: exitcode 155"
-                in self.result.result.message
+                in str(self.result.result)
             )
         ):
             self.state = self.FAILED_RETRYING
@@ -81,7 +81,7 @@ class ResultState(object):
         # return self._type or self.app.tasks[self['task']]
         elif (
             isinstance(self.result.result, TypeError)
-            and "unhashable type: 'list'" == self.result.result.message
+            and "unhashable type: 'list'" == str(self.result.result)
         ):
             self.state = self.RESCHEDULE
 

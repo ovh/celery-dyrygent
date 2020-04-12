@@ -287,7 +287,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
                 self.logger.warning(
                     "Task %s detected as ready but got exception '%s', "
                     "assuming it will be retried and executed",
-                    task_id, result.value.message
+                    task_id, str(result.value)
                 )
                 self._celery_errors_within_tick.append(
                     "Problem with task {}".format(task_id)
@@ -309,7 +309,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
                 self.logger.warning(
                     "Task %s detected with exception '%s', "
                     "requires reschedule",
-                    task_id, result.value.message
+                    task_id, str(result.value)
                 )
                 self._celery_errors_within_tick.append(
                     "Reschedule task {}".format(task_id)
@@ -325,7 +325,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
                 # treating the fail as permanent
                 continue
 
-            if self.running[task_id] > 1:
+            if self.running[task_id] and self.running[task_id] > 1:
                 self.logger.info(
                     "Task %s has final state after %s checks",
                     task_id, self.running[task_id]

@@ -357,6 +357,7 @@ class TestWorkflows(object):
         assert wf.running == {'task-8': True, 'task-6': True, 'task-7': True, 'task-4': True, 'task-5': True, 'task-2': True, 'task-3': True, 'task-0': True, 'task-1': True}  # noqa
         assert not wf.simulate_tick()
 
+
     def test_to_from_dict(self, some_sigs):
         wf = Workflow()
         chain1 = celery_canvas.chain(some_sigs[:3])
@@ -365,7 +366,7 @@ class TestWorkflows(object):
         wf_dict = wf.to_dict()
         wf2 = Workflow.from_dict(wf_dict)
 
-        assert wf.nodes.keys() == wf2.nodes.keys()
+        assert list(wf.nodes.keys()) == list(wf2.nodes.keys())
 
         # use build_exec_asserts helper to rebuild asserts
         # build_exec_asserts(wf)

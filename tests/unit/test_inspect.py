@@ -10,27 +10,27 @@ from celery_dyrygent.celery.inspect import ResultState
 
 class TestResultState(object):
     @pytest.mark.parametrize('res_state, res_val, ready, expected', [
-        (u'PENDING', None, False, ResultState.INIT),
-        (u'STARTED', None, False, ResultState.RUNNING),
-        (u'FAILED', None, True, ResultState.DONE),
+        ('PENDING', None, False, ResultState.INIT),
+        ('STARTED', None, False, ResultState.RUNNING),
+        ('FAILED', None, True, ResultState.DONE),
         (
-            u'FAILED',
+            'FAILED',
             Exception('Worker exited prematurely: exitcode 155.'),
             True, ResultState.DONE
         ),
         (
-            u'FAILED',
+            'FAILED',
             WorkerLostError('Worker exited prematurely: exitcode 155.'),
             True, ResultState.FAILED_RETRYING
         ),
-        (u'SUCCESS', 0, True, ResultState.DONE),
+        ('SUCCESS', 0, True, ResultState.DONE),
         (
-            u'FAILED',
+            'FAILED',
             'Worker exited prematurely: exitcode 155.',
             True, ResultState.DONE
         ),
         (
-            u'FAILED',
+            'FAILED',
             TypeError("unhashable type: 'list'"),
             True, ResultState.RESCHEDULE
         ),
@@ -65,7 +65,7 @@ class TestResultState(object):
     def test_is_done(self, ready, expected):
         res = mock.Mock(spec=AsyncResult)
         res.ready.return_value = ready
-        res.state = u'DUMMY'
+        res.state = 'DUMMY'
         result = ResultState(res)
         assert result.is_done() == expected
 
