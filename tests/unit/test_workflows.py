@@ -101,12 +101,15 @@ class TestWorkflowNode(object):
         w1.add_dependency(w2)
         w1.add_dependency(w3)
 
+        w1.user_params["foo"] = "bar"
+
         d = w1.to_dict()
 
         assert d['id'] == 'task-1'
         assert d['dependencies']
         assert d['dependencies']['task-2'] is None
         assert d['dependencies']['task-3'] is None
+        assert d['user_params']['foo'] is "bar"
         assert d['signature'] is w1.signature
 
     def test_from_dict(self):
@@ -123,6 +126,26 @@ class TestWorkflowNode(object):
         assert w1.id == 'task-7'
         assert w1.signature.id == 'task-7'
         assert w1.dependencies == {'task-4': None}
+
+
+    def test_from_dict_with_user_params(self):
+        data_dict = {
+            'id': 'task-7',
+            'signature': {
+                'options': {'task_id': 'task-7'}, 'task': None,
+                'args': (), 'kwargs': {},
+            },
+            'dependencies': {'task-4': None},
+            'user_params' : {
+                'foo' : 42
+            }
+        }
+        w1 = WorkflowNode.from_dict(data_dict)
+
+        assert w1.id == 'task-7'
+        assert w1.signature.id == 'task-7'
+        assert w1.dependencies == {'task-4': None}
+        assert w1.user_params['foo'] == 42
 
 
 class TestWorkflow(object):
