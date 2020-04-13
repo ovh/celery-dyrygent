@@ -4,6 +4,7 @@
 
 import celery
 import pytest
+from distutils.version import LooseVersion
 from celery import canvas as celery_canvas
 
 from celery_dyrygent import (
@@ -337,8 +338,13 @@ class TestWorkflows(object):
         assert not wf.simulate_tick()
 
     @pytest.mark.skipif(
-        celery.__version__.startswith('3'),
+        LooseVersion(celery.__version__) < LooseVersion('4'),
         reason='Not supported on celery3'
+    )
+    @pytest.mark.skipif(
+        LooseVersion(celery.__version__) >= LooseVersion('4.4'),
+        # https://github.com/celery/celery/pull/5613
+        reason='Different behavior on celery 4.4+'
     )
     def test_simulate_run_group_group(self, some_sigs):
         wf = Workflow()
@@ -357,6 +363,26 @@ class TestWorkflows(object):
         assert wf.running == {'task-8': True, 'task-6': True, 'task-7': True, 'task-4': True, 'task-5': True, 'task-2': True, 'task-3': True, 'task-0': True, 'task-1': True}  # noqa
         assert not wf.simulate_tick()
 
+    @pytest.mark.skipif(
+        LooseVersion(celery.__version__) < LooseVersion('4.4'),
+        # https://github.com/celery/celery/pull/5613
+        reason='Different behavior on celery 4.4+'
+    )
+    def test_simulate_run_group_group_fixed(self, some_sigs):
+        wf = Workflow()
+        group1 = celery_canvas.group(some_sigs[:4])
+        group2 = celery_canvas.group(some_sigs[4:9])
+
+        canvas = group1 | group2
+        wf.add_celery_canvas(canvas)
+
+        # use build_exec_asserts helper to rebuild asserts
+        # build_exec_asserts(wf)
+        assert wf.simulate_tick()
+        assert wf.running == {'task-0': True, 'task-1': True, 'task-2': True, 'task-3': True}  # noqa
+        assert wf.simulate_tick()
+        assert wf.running == {'task-4': True, 'task-5': True, 'task-6': True, 'task-7': True, 'task-8': True}  # noqa
+        assert not wf.simulate_tick()
 
     def test_to_from_dict(self, some_sigs):
         wf = Workflow()
