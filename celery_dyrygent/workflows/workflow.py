@@ -277,7 +277,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         # get finished tasks states
         states = self.get_tasks_state(self.running)
 
-        for task_id, result in states.iteritems():
+        for task_id, result in states.items():
             if not result.is_done():
                 self.logger.debug("Task %s is still running", task_id)
                 continue
@@ -287,7 +287,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
                 self.logger.warning(
                     "Task %s detected as ready but got exception '%s', "
                     "assuming it will be retried and executed",
-                    task_id, result.value.message
+                    task_id, str(result.value)
                 )
                 self._celery_errors_within_tick.append(
                     "Problem with task {}".format(task_id)
@@ -309,7 +309,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
                 self.logger.warning(
                     "Task %s detected with exception '%s', "
                     "requires reschedule",
-                    task_id, result.value.message
+                    task_id, str(result.value)
                 )
                 self._celery_errors_within_tick.append(
                     "Reschedule task {}".format(task_id)
@@ -325,7 +325,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
                 # treating the fail as permanent
                 continue
 
-            if self.running[task_id] > 1:
+            if self.running[task_id] and self.running[task_id] > 1:
                 self.logger.info(
                     "Task %s has final state after %s checks",
                     task_id, self.running[task_id]
@@ -347,7 +347,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         """
         return set([
             task_id
-            for task_id, task_success in self.finished.iteritems()
+            for task_id, task_success in self.finished.items()
             if task_success
         ])
 
@@ -358,7 +358,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         ok_tasks = self.get_unlocked_dependencies()
         to_run = []
 
-        for node_id, node in self.nodes.iteritems():
+        for node_id, node in self.nodes.items():
             if node_id in self.running or node_id in self.finished:
                 continue
 
@@ -526,7 +526,7 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         obj = cls()
         obj.nodes = {
             node_id: WorkflowNode.from_dict(node_dict)
-            for node_id, node_dict in workflow_dict['nodes'].iteritems()
+            for node_id, node_dict in workflow_dict['nodes'].items()
         }
 
         for attr in cls.straight_serializables:

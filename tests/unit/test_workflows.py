@@ -348,11 +348,11 @@ class TestWorkflow(object):
         with mock.patch.object(Workflow, 'get_tasks_state') as gts:
             nodes = {i: mock.Mock() for i in range(4)}
 
-            for node_id, result in nodes.items():
+            for node_id, result in list(nodes.items()):
                 result.id = node_id
                 result.was_published.return_value = False
                 result.needs_reschedule.return_value = False
-                result.task_state = u'PENDING'
+                result.task_state = 'PENDING'
 
             gts.return_value = nodes
 
@@ -506,6 +506,7 @@ class TestWorkflow(object):
 
     def test_tick_too_late(self, wf):
         wf.set_max_processing_time(0)
+        wf.freeze()
         with pytest.raises(WorkflowException, match='for too long'):
             wf.tick()
 
