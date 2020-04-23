@@ -123,6 +123,24 @@ Handler params are:
 - workflow instance
 - payload - None
 
+
+### Support for custom data
+Both `Workflow`and `WorkflowNode` have a `user_params` dictionary member that can be used to store 
+additional data. For example, one can use those dictionnary to store some application specific 
+metadata.
+
+```python
+...
+wf = Workflow()
+for task in task_list:
+    sig = create_celery_task(task)
+    sig.freeze()
+    node = wf.add_signature(sig)
+    node.user_params['user_id'] = task.user_id
+...
+```
+
+
 ## TODO
 - Proper documentation (e.g. sphinx)
 - Some integration tests?
