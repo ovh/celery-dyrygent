@@ -575,6 +575,36 @@ class TestWorkflow(object):
 
         wf.nodes['10'].to_dict.assert_called()
 
+
+        wf.user_params["foo"] = "bar"
+        res = wf.to_dict()
+        assert res == {
+            'running': {
+                '1': True,
+                '2': False,
+            },
+            'finished': {
+                '6': True,
+                '7': False,
+            },
+            'nodes': {
+                '10': 'inner',
+            },
+            'processing_limit_ts': 500,
+            'version': 1,
+            'retry_policy': ['random', 10, 30],
+            'stats': {
+                'last_apply_async_tick': 0,
+                'ticks': 0,
+                'consecutive_celery_error_ticks': 0,
+            },
+            'id': None,
+            'state': 'INITIAL',
+            'user_params' : {
+                'foo': 'bar'
+            }
+        }
+
     def test_from_dict(self):
         wf_dict = {
             'finished': {'1': False},
@@ -608,11 +638,56 @@ class TestWorkflow(object):
             }
 
             assert wf.processing_limit_ts == 5000
+            assert wf.user_params == {}
 
             mck.assert_has_calls([
                 mock.call('data'),
                 mock.call('data2'),
             ])
+
+    def test_from_dict_with_user_params(self):
+        wf_dict = {
+            'finished': {'1': False},
+            'running': {'2': True},
+            'nodes': {'some': 'data', 'some2': 'data2'},
+            'processing_limit_ts': 5000,
+            'version': 1,
+            'retry_policy': ['random', 10, 30],
+            'stats': {
+                'last_apply_async_tick': 0,
+                'ticks': 25
+            },
+            'id': None,
+            'state': 'RUNNING',
+            'user_params' : {
+                'foo' : 'bar'
+            }
+        }
+        with mock.patch.object(WorkflowNode, 'from_dict') as mck:
+            mck.return_value = 'some_result'
+            wf = Workflow.from_dict(wf_dict)
+            assert wf.state == 'RUNNING'
+            assert wf.running == {'2': True}
+            assert wf.finished == {'1': False}
+            assert wf.version == 1
+            assert wf.nodes == {
+                'some': 'some_result',
+                'some2': 'some_result',
+            }
+            assert wf.stats == {
+                'last_apply_async_tick': 0,
+                'ticks': 25,
+                'consecutive_celery_error_ticks': 0,
+            }
+
+            assert wf.processing_limit_ts == 5000
+            assert wf.user_params == {'foo': 'bar'}
+
+            mck.assert_has_calls([
+                mock.call('data'),
+                mock.call('data2'),
+            ])
+
 
     def test_freeze_no_task(self):
         wf = Workflow()

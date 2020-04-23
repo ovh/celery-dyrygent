@@ -235,6 +235,8 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         # celery erorrs within tick
         self._celery_errors_within_tick = []
 
+        self.user_params = {}
+
         # create instance level logger
         self.__init_logger()
 
@@ -519,6 +521,10 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         for attr in self.straight_serializables:
             res[attr] = getattr(self, attr)
         res['stats'] = self.stats
+
+        if self.user_params:
+            res['user_params'] = self.user_params
+
         return res
 
     @classmethod
@@ -528,6 +534,8 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
             node_id: WorkflowNode.from_dict(node_dict)
             for node_id, node_dict in workflow_dict['nodes'].items()
         }
+
+        obj.user_params = workflow_dict['user_params'] if 'user_params' in workflow_dict else {}
 
         for attr in cls.straight_serializables:
             setattr(obj, attr, workflow_dict[attr])
