@@ -185,17 +185,24 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
     # by default processing task will be retried for 7
     max_processing_time = int(timedelta(days=7).total_seconds())
 
-    straight_serializables = [
-        'running',
-        'finished',
-        'processing_limit_ts',
-        'version',
-        'retry_policy',
-        'id',
-        'state',
-    ]
+    straight_serializables = {
+        'running': {},
+        'finished': {},
+        'processing_limit_ts': None,
+        'version': 1,
+        'retry_policy': ['random', 3, 10],
+        'id': None,
+        'state': WorkflowState.INITIAL,
+        'tasks_options': {},
+        'workflow_options': {},
+        'custom_payload': {}
+    }
 
-    def __init__(self):
+    def __init__(self, options=None):
+        """
+        Options are being transferred to the workflow task, as defined in
+        https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.apply_async
+        """
         # holds state of workflow
         self.state = WorkflowState.INITIAL
 
@@ -236,6 +243,10 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         self._celery_errors_within_tick = []
 
         self.custom_payload = {}
+
+        # options for apply_async
+        self.tasks_options = {}
+        self.workflow_options = options or {}
 
         # create instance level logger
         self.__init_logger()
@@ -391,8 +402,10 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
 
     def schedule_node_exec(self, node):
         assert node.id not in self.running
-        self.logger.info("Scheduling execution of task %s", node.id)
-        node.signature.apply_async()
+        self.logger.info("Scheduling execution of task %s with options %s",
+                         node.id,
+                         self.tasks_options)
+        node.signature.apply_async(**self.tasks_options)
 
         # store number here, the number will be used as counter of
         # consecutive checks for failed tasks in order to mitigate
@@ -402,8 +415,10 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
 
     def reschedule_node_exec(self, node):
         assert node.id in self.running
-        self.logger.info("Rescheduling execution of task %s", node.id)
-        node.signature.apply_async()
+        self.logger.info("Rescheduling execution of task %s with options %s",
+                         node.id,
+                         self.tasks_options)
+        node.signature.apply_async(**self.tasks_options)
 
     def tick(self):
         try:
@@ -533,9 +548,8 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
             for node_id, node_dict in workflow_dict['nodes'].items()
         }
 
-        obj.custom_payload = workflow_dict.get('custom_payload', {})
-        for attr in cls.straight_serializables:
-            setattr(obj, attr, workflow_dict[attr])
+        for attr, default in cls.straight_serializables.items():
+            setattr(obj, attr, workflow_dict.get(attr, default))
 
         # need to treat stats in special way as stats may e.g.
         # have additional keys when version is updated
@@ -610,15 +624,19 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         self.logger.info("Workflow signature ready")
         return signature
 
-    def apply_async(self):
+    def apply_async(self, **kwargs):
         """
-        Schedules execution of the workflow
+        Schedules execution of the workflow.
+        accepts the same options as are defined in:
+        https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.apply_async
+        and applies them to each individual celery task other than the workflow task.
         """
+        self.tasks_options = kwargs
         if self._signature is None:
             self.freeze()
 
-        self.logger.info("Scheduling workflow execution")
-        return self._signature.apply_async()
+        self.logger.info("Scheduling workflow execution with options %s", self.workflow_options)
+        return self._signature.apply_async(**self.workflow_options)
 
     def skip_tasks(self, task_ids):
         """
