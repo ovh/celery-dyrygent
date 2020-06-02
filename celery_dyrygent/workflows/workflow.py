@@ -624,13 +624,14 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         Schedules execution of the workflow.
         accepts the same options as are defined in:
         https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.apply_async
-        and applies them to each individual celery task other than the workflow task.
+        and applies them to each individual celery task other than Workflow.
         """
         self.tasks_options = kwargs
         if self._signature is None:
             self.freeze()
 
-        self.logger.info("Scheduling workflow execution with options %s", self.workflow_options)
+        self.logger.info("Scheduling workflow execution with options %s",
+                         self.workflow_options)
         return self._signature.apply_async(**self.workflow_options)
 
     def skip_tasks(self, task_ids):
