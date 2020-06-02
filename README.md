@@ -140,6 +140,16 @@ for task in task_list:
 ...
 ```
 
+#### Using celery task options
+You can define custom options for your tasks, as defined in:
+https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.apply_async
+
+These options may be different between the workflow task and user tasks.
+``` python
+wf = Workflow(options={'priority': 10})
+wf.add_celery_canvas(canvas)
+wf.apply_async(priority=8)
+```
 
 ## TODO
 - Proper documentation (e.g. sphinx)
