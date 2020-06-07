@@ -619,14 +619,14 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         self.logger.info("Workflow signature ready")
         return signature
 
-    def apply_async(self, **kwargs):
+    def apply_async(self, options=None):
         """
         Schedules execution of the workflow.
         accepts the same options as are defined in:
         https://docs.celeryproject.org/en/stable/reference/celery.app.task.html#celery.app.task.Task.apply_async
         and applies them to each individual celery task other than Workflow.
         """
-        self.tasks_options = kwargs
+        self.tasks_options = options or {}
         if self._signature is None:
             self.freeze()
 

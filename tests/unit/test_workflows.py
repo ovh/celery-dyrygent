@@ -671,7 +671,7 @@ class TestWorkflow(object):
         Workflow.set_workflow_processor_task(task_cls)
 
         options = {'option': True}
-        wf.apply_async(**options)
+        wf.apply_async(options=options)
         wf.schedule_node_exec(node)
 
         signature.apply_async.assert_called_with()

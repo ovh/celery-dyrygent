@@ -131,7 +131,7 @@ These options may be different between the workflow task and user tasks.
 ``` python
 wf = Workflow(options={'priority': 10})
 wf.add_celery_canvas(canvas)
-wf.apply_async(priority=8)
+wf.apply_async(options={'priority': 8})
 ```
 
 ## TODO
