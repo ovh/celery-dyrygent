@@ -28,7 +28,7 @@ class WorkflowNode(object):
         # dict will be able to hold additional info, e.g to run task only if
         # on of dependency fails e.g. at least twice
         self.dependencies = {}
-        self.user_params = {}
+        self.custom_payload = {}
 
     def add_dependency(self, other_node, options=None):
         assert isinstance(other_node, WorkflowNode)
@@ -47,17 +47,13 @@ class WorkflowNode(object):
         """
         Packs internals into a serializable dict
         """
-        d = dict(
+        return dict(
             id=self.id,
             # celery signatures are serializable so it will work
             signature=self.signature,
             dependencies=self.dependencies,
+            custom_payload=self.custom_payload,
         )
-        if not self.user_params :
-            return d
-        else:
-            d.update(dict(user_params=self.user_params))
-            return d
 
     @classmethod
     def from_dict(cls, data_dict):
@@ -68,8 +64,5 @@ class WorkflowNode(object):
         sig = entities.Signature(data_dict['signature'])
         obj = cls(sig)
         obj.dependencies = data_dict['dependencies']
-        if 'user_params' in data_dict:
-            obj.user_params = data_dict['user_params']
-        else:
-            obj.user_params = {}
+        obj.custom_payload = data_dict.get('custom_payload', {})
         return obj

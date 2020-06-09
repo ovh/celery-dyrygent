@@ -101,7 +101,7 @@ class TestWorkflowNode(object):
         w1.add_dependency(w2)
         w1.add_dependency(w3)
 
-        w1.user_params["foo"] = "bar"
+        w1.custom_payload["foo"] = "bar"
 
         d = w1.to_dict()
 
@@ -109,7 +109,7 @@ class TestWorkflowNode(object):
         assert d['dependencies']
         assert d['dependencies']['task-2'] is None
         assert d['dependencies']['task-3'] is None
-        assert d['user_params']['foo'] is "bar"
+        assert d['custom_payload']['foo'] is "bar"
         assert d['signature'] is w1.signature
 
     def test_from_dict(self):
@@ -128,7 +128,7 @@ class TestWorkflowNode(object):
         assert w1.dependencies == {'task-4': None}
 
 
-    def test_from_dict_with_user_params(self):
+    def test_from_dict_with_custom_payload(self):
         data_dict = {
             'id': 'task-7',
             'signature': {
@@ -136,7 +136,7 @@ class TestWorkflowNode(object):
                 'args': (), 'kwargs': {},
             },
             'dependencies': {'task-4': None},
-            'user_params' : {
+            'custom_payload' : {
                 'foo' : 42
             }
         }
@@ -145,7 +145,7 @@ class TestWorkflowNode(object):
         assert w1.id == 'task-7'
         assert w1.signature.id == 'task-7'
         assert w1.dependencies == {'task-4': None}
-        assert w1.user_params['foo'] == 42
+        assert w1.custom_payload['foo'] == 42
 
 
 class TestWorkflow(object):
@@ -571,12 +571,13 @@ class TestWorkflow(object):
             },
             'id': None,
             'state': 'INITIAL',
+            'custom_payload':{},
         }
 
         wf.nodes['10'].to_dict.assert_called()
 
 
-        wf.user_params["foo"] = "bar"
+        wf.custom_payload["foo"] = "bar"
         res = wf.to_dict()
         assert res == {
             'running': {
@@ -600,7 +601,7 @@ class TestWorkflow(object):
             },
             'id': None,
             'state': 'INITIAL',
-            'user_params' : {
+            'custom_payload' : {
                 'foo': 'bar'
             }
         }
@@ -638,14 +639,14 @@ class TestWorkflow(object):
             }
 
             assert wf.processing_limit_ts == 5000
-            assert wf.user_params == {}
+            assert wf.custom_payload == {}
 
             mck.assert_has_calls([
                 mock.call('data'),
                 mock.call('data2'),
             ])
 
-    def test_from_dict_with_user_params(self):
+    def test_from_dict_with_custom_payload(self):
         wf_dict = {
             'finished': {'1': False},
             'running': {'2': True},
@@ -659,7 +660,7 @@ class TestWorkflow(object):
             },
             'id': None,
             'state': 'RUNNING',
-            'user_params' : {
+            'custom_payload' : {
                 'foo' : 'bar'
             }
         }
@@ -681,7 +682,7 @@ class TestWorkflow(object):
             }
 
             assert wf.processing_limit_ts == 5000
-            assert wf.user_params == {'foo': 'bar'}
+            assert wf.custom_payload == {'foo': 'bar'}
 
             mck.assert_has_calls([
                 mock.call('data'),
