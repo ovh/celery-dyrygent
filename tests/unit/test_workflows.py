@@ -109,7 +109,7 @@ class TestWorkflowNode(object):
         assert d['dependencies']
         assert d['dependencies']['task-2'] is None
         assert d['dependencies']['task-3'] is None
-        assert d['custom_payload']['foo'] is "bar"
+        assert d['custom_payload']['foo'] == "bar"
         assert d['signature'] is w1.signature
 
     def test_from_dict(self):
@@ -577,34 +577,11 @@ class TestWorkflow(object):
         wf.nodes['10'].to_dict.assert_called()
 
 
+    def test_to_dict_with_custom_payload(self, wf):
         wf.custom_payload["foo"] = "bar"
         res = wf.to_dict()
-        assert res == {
-            'running': {
-                '1': True,
-                '2': False,
-            },
-            'finished': {
-                '6': True,
-                '7': False,
-            },
-            'nodes': {
-                '10': 'inner',
-            },
-            'processing_limit_ts': 500,
-            'version': 1,
-            'retry_policy': ['random', 10, 30],
-            'stats': {
-                'last_apply_async_tick': 0,
-                'ticks': 0,
-                'consecutive_celery_error_ticks': 0,
-            },
-            'id': None,
-            'state': 'INITIAL',
-            'custom_payload' : {
-                'foo': 'bar'
-            }
-        }
+        assert res['custom_payload']['foo'] == 'bar'
+
 
     def test_from_dict(self):
         wf_dict = {
