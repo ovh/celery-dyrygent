@@ -101,12 +101,15 @@ class TestWorkflowNode(object):
         w1.add_dependency(w2)
         w1.add_dependency(w3)
 
+        w1.custom_payload["foo"] = "bar"
+
         d = w1.to_dict()
 
         assert d['id'] == 'task-1'
         assert d['dependencies']
         assert d['dependencies']['task-2'] is None
         assert d['dependencies']['task-3'] is None
+        assert d['custom_payload']['foo'] == "bar"
         assert d['signature'] is w1.signature
 
     def test_from_dict(self):
@@ -123,6 +126,26 @@ class TestWorkflowNode(object):
         assert w1.id == 'task-7'
         assert w1.signature.id == 'task-7'
         assert w1.dependencies == {'task-4': None}
+
+
+    def test_from_dict_with_custom_payload(self):
+        data_dict = {
+            'id': 'task-7',
+            'signature': {
+                'options': {'task_id': 'task-7'}, 'task': None,
+                'args': (), 'kwargs': {},
+            },
+            'dependencies': {'task-4': None},
+            'custom_payload' : {
+                'foo' : 42
+            }
+        }
+        w1 = WorkflowNode.from_dict(data_dict)
+
+        assert w1.id == 'task-7'
+        assert w1.signature.id == 'task-7'
+        assert w1.dependencies == {'task-4': None}
+        assert w1.custom_payload['foo'] == 42
 
 
 class TestWorkflow(object):
@@ -548,9 +571,17 @@ class TestWorkflow(object):
             },
             'id': None,
             'state': 'INITIAL',
+            'custom_payload':{},
         }
 
         wf.nodes['10'].to_dict.assert_called()
+
+
+    def test_to_dict_with_custom_payload(self, wf):
+        wf.custom_payload["foo"] = "bar"
+        res = wf.to_dict()
+        assert res['custom_payload']['foo'] == 'bar'
+
 
     def test_from_dict(self):
         wf_dict = {
@@ -585,11 +616,56 @@ class TestWorkflow(object):
             }
 
             assert wf.processing_limit_ts == 5000
+            assert wf.custom_payload == {}
 
             mck.assert_has_calls([
                 mock.call('data'),
                 mock.call('data2'),
             ])
+
+    def test_from_dict_with_custom_payload(self):
+        wf_dict = {
+            'finished': {'1': False},
+            'running': {'2': True},
+            'nodes': {'some': 'data', 'some2': 'data2'},
+            'processing_limit_ts': 5000,
+            'version': 1,
+            'retry_policy': ['random', 10, 30],
+            'stats': {
+                'last_apply_async_tick': 0,
+                'ticks': 25
+            },
+            'id': None,
+            'state': 'RUNNING',
+            'custom_payload' : {
+                'foo' : 'bar'
+            }
+        }
+        with mock.patch.object(WorkflowNode, 'from_dict') as mck:
+            mck.return_value = 'some_result'
+            wf = Workflow.from_dict(wf_dict)
+            assert wf.state == 'RUNNING'
+            assert wf.running == {'2': True}
+            assert wf.finished == {'1': False}
+            assert wf.version == 1
+            assert wf.nodes == {
+                'some': 'some_result',
+                'some2': 'some_result',
+            }
+            assert wf.stats == {
+                'last_apply_async_tick': 0,
+                'ticks': 25,
+                'consecutive_celery_error_ticks': 0,
+            }
+
+            assert wf.processing_limit_ts == 5000
+            assert wf.custom_payload == {'foo': 'bar'}
+
+            mck.assert_has_calls([
+                mock.call('data'),
+                mock.call('data2'),
+            ])
+
 
     def test_freeze_no_task(self):
         wf = Workflow()
