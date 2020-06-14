@@ -1,10 +1,11 @@
-language: python
-python:
-  - "2.7"
-  - "3.6"
-  - "3.8"
+language: generic
+dist: bionic
 
 install:
+  - apt install --yes python
+  - apt install --yes python3.6
+  - apt install --yes python3.8
+  - apt install python-pip
   - pip install tox
 
 script:
