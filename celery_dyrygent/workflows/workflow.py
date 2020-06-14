@@ -536,7 +536,6 @@ class Workflow(WorkflowSignalMixin, CeleryWorkflowMixin):
         for attr in self.straight_serializables:
             res[attr] = getattr(self, attr)
         res['stats'] = self.stats
-        res['custom_payload'] = self.custom_payload
 
         return res
 
