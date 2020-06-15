@@ -16,6 +16,7 @@ def workflow_processor(self, workflow_dict):
         self.retry(
             kwargs=dict(workflow_dict=wf.to_dict()),
             countdown=wf.get_retry_countdown(),
+            **wf.workflow_options
         )
 
 

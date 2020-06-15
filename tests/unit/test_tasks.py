@@ -28,6 +28,7 @@ class TestTasks(object):
 
     def test_workflow_processor(self, task_obj, from_dict, wf):
         wf.tick.return_value = False
+        from_dict.return_value.workflow_options = {}
         tasks.workflow_processor(task_obj, {'a': 'b'})
         from_dict.assert_called_with({'a': 'b', 'id': task_obj.request.id})
         wf.tick.assert_called_with()
