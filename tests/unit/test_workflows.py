@@ -572,6 +572,8 @@ class TestWorkflow(object):
             'id': None,
             'state': 'INITIAL',
             'custom_payload':{},
+            'tasks_options': {},
+            'workflow_options': {}
         }
 
         wf.nodes['10'].to_dict.assert_called()
@@ -597,6 +599,8 @@ class TestWorkflow(object):
             },
             'id': None,
             'state': 'RUNNING',
+            'tasks_options': {},
+            'workflow_options': {}
         }
         with mock.patch.object(WorkflowNode, 'from_dict') as mck:
             mck.return_value = 'some_result'
@@ -666,7 +670,6 @@ class TestWorkflow(object):
                 mock.call('data2'),
             ])
 
-
     def test_freeze_no_task(self):
         wf = Workflow()
         wf.set_workflow_processor_task(None)
@@ -710,6 +713,44 @@ class TestWorkflow(object):
             kwargs=dict(workflow_dict=wf.to_dict())
         )
         signature.apply_async.assert_called()
+
+    def test_apply_async_uses_workflow_options(self):
+        options = {'option': True}
+        wf = Workflow(options=options)
+        task_cls = mock.Mock()
+        signature = mock.Mock()
+        task_cls.subtask.return_value = signature
+        signature.id = 'dummy'
+        Workflow.set_workflow_processor_task(task_cls)
+
+        wf.apply_async()
+        assert wf.id == 'dummy'
+
+        # trickery, task_cls.subtask was called before ID was assigned
+        # to workflow, while now wf.to_dict has id field set
+        # just set it back to None
+        wf.id = None
+        task_cls.subtask.assert_called_with(
+            kwargs=dict(workflow_dict=wf.to_dict())
+        )
+        signature.apply_async.assert_called_with(**options)
+
+    def test_schedule_node_exec_uses_task_options(self):
+        wf = Workflow()
+        task_cls = mock.Mock()
+        signature = mock.Mock()
+        node = mock.Mock()
+        node.id = 'task_node'
+        task_cls.subtask.return_value = signature
+        signature.id = 'dummy'
+        Workflow.set_workflow_processor_task(task_cls)
+
+        options = {'option': True}
+        wf.apply_async(options=options)
+        wf.schedule_node_exec(node)
+
+        signature.apply_async.assert_called_with()
+        node.signature.apply_async.assert_called_with(**options)
 
     def test_check_processing_time(self):
         wf = Workflow()
