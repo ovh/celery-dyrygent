@@ -622,10 +622,12 @@ class TestWorkflow(object):
             assert wf.processing_limit_ts == 5000
             assert wf.custom_payload == {}
 
+            # order of calls may not be preserved in older versions of Python
+            # as dict order was non-deterministic < 3.7
             mck.assert_has_calls([
                 mock.call('data'),
                 mock.call('data2'),
-            ])
+            ], any_order=True)
 
     def test_from_dict_with_custom_payload(self):
         wf_dict = {
@@ -665,10 +667,12 @@ class TestWorkflow(object):
             assert wf.processing_limit_ts == 5000
             assert wf.custom_payload == {'foo': 'bar'}
 
+            # order of calls may not be preserved in older versions of Python
+            # as dict order was non-deterministic < 3.7
             mck.assert_has_calls([
                 mock.call('data'),
                 mock.call('data2'),
-            ])
+            ], any_order=True)
 
     def test_freeze_no_task(self):
         wf = Workflow()
