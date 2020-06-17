@@ -32,7 +32,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 # Get the all required packages
-with open('requirements.txt') as f:
+with open(path.join(here, 'requirements.txt')) as f:
     required = f.read().splitlines()
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
