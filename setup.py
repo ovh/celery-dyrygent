@@ -147,7 +147,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'celery>=3.1.25'
+        'celery>=3.1.25,!=4.0.*,!=4.1.*'
     ],  # Optional
 
     # List additional groups of dependencies here (e.g. development
