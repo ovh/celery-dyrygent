@@ -1,0 +1,25 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:alpine
+    ports:
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=mypass
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+  worker:
+    build: worker/
+    command: ['celery', 'worker', '-A', 'app.app', '-l', 'info', '-f', 'celery.logs']
+    environment:
+      - BROKER_URL=amqp://admin:mypass@rabbitmq:5672//
+      - RESULT_BACKEND=redis://redis:6379/0
+      - C_FORCE_ROOT=true
+#    volumes:
+#      - .:/application
+    depends_on:
+      - rabbitmq
+      - redis
