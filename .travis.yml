@@ -1,6 +1,4 @@
 language: generic
-services:
-  - docker
 dist: bionic
 
 before_install:
@@ -12,7 +10,6 @@ before_install:
 
 install:
   - pip install tox
-  - pip install docker-compose
 
 script:
   - tox
