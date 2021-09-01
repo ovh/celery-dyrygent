@@ -1,8 +1,8 @@
 # Celery Dyrygent
 
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
-![Unit Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/unit-tests.yml/badge.svg)
-![Integration Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/integration-tests.yml/badge.svg)
+[![Unit Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/ovh/celery-dyrygent/actions/workflows/unit-tests.yml)
+[![Integration Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/ovh/celery-dyrygent/actions/workflows/integration-tests.yml)
 
 
 This project aims to support full DAG workflow processing.
