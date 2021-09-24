@@ -159,5 +159,4 @@ wf.apply_async(options={'priority': 8})
 
 ## TODO
 - Proper documentation (e.g. sphinx)
-- Some integration tests?
 - Python pip release

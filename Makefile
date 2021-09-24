@@ -12,6 +12,12 @@ clean:
 bdist:
 	python setup.py bdist_wheel
 
+requirements_dev:
+	pip install -r requirements-dev.txt 
+
+requirements_test_integration: requirements_dev
+	pip install celery[redis]==$(CELERY_VERSION)
+
 test: test_unit test_component
 
 test_unit:
@@ -20,7 +26,7 @@ test_unit:
 test_component:
 	py.test $(PYTEST_OPTS) tests/component
 
-test_integration:
+test_integration: requirements_test_integration
 	rm -r  tests/integration/setup/worker/src/celery_dyrygent || true
 	cp -r celery_dyrygent tests/integration/setup/worker/src/
 	docker-compose -p integration_test -f tests/integration/setup/docker-compose.yml build --no-cache --build-arg CELERY_VERSION=$(CELERY_VERSION) --build-arg PYTHON_VERSION=$(PYTHON_VERSION)

@@ -2,7 +2,6 @@
 # license that can be found in the LICENSE file.
 # Copyright 2019 The celery-dyrygent Authors. All rights reserved.
 
-import hashlib
 from os import (
     environ,
 )
@@ -27,11 +26,6 @@ app = Celery('tasks', broker=broker_url, backend=result_backend)
 workflow_processor = register_workflow_processor(app)
 
 
-def md5(value):
-    """Md5 check. The same function exists in master."""
-    return hashlib.md5(str(value).encode()).hexdigest()
-
-
 @app.task()
 def order_task(test_name, test_value):
     logger.info('Test name: %s Test value: %s', test_name, test_value)
@@ -40,7 +34,7 @@ def order_task(test_name, test_value):
 
 @app.task(bind=True)
 def return_value_task(self, test_name):
-    logger.info('Test name: %s Test value: %s', test_name, md5(self.request.id))
+    logger.info('Test name: %s Test value: %s', test_name, self.request.id)
     return
 
 

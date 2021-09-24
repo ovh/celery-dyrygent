@@ -2,7 +2,6 @@
 # license that can be found in the LICENSE file.
 # Copyright 2019 The celery-dyrygent Authors. All rights reserved.
 
-import hashlib
 import re
 import uuid
 from collections import (
@@ -29,11 +28,6 @@ def test_name():
 
 class Helpers:
     @staticmethod
-    def md5(value):
-        """Md5 check. The same function exists in worker."""
-        return hashlib.md5(str(value).encode()).hexdigest()
-
-    @staticmethod
     def parse_logs(logs):
         task_regex = r'app.(?:order|return_value)_task\[([\w-]+)\]: Test name: ([\w-]+) Test value: ([\w-]+)'
         grouped_logs = defaultdict(list)
@@ -59,7 +53,7 @@ class TestCeleryDyrygentReturnValue(Helpers):
         logs_result = read_logs.delay()
         results = self.parse_logs(logs_result.get())[test_name]
 
-        assert self.md5(task_id) == results[0]
+        assert task_id == results[0]
 
 
 class TestCeleryDyrygentOrder(Helpers):
