@@ -8,3 +8,4 @@ dist/
 .coverage
 htmlcov/
 .tox/
+/tests/integration/setup/worker/src/celery_dyrygent
