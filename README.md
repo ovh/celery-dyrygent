@@ -161,4 +161,4 @@ wf.apply_async(options={'priority': 8})
 
 ## TODO
 - Proper documentation (e.g. sphinx)
-- Python pip release
+- Celery 5 support (should work out of box)
