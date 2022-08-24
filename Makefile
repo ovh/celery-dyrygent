@@ -1,5 +1,5 @@
-PYTHON_VERSION := 3.6
-CELERY_VERSION := 4.2.0
+PYTHON_VERSION := 3.8
+CELERY_VERSION := 5.2.7
 
 ifdef COV
 	override PYTEST_OPTS += --cov=celery_dyrygent
