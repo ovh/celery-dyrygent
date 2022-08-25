@@ -31,7 +31,7 @@ test_integration: requirements_test_integration
 	cp -r celery_dyrygent tests/integration/setup/worker/src/
 	docker-compose -p integration_test -f tests/integration/setup/docker-compose.yml build --no-cache --build-arg CELERY_VERSION="$(CELERY_VERSION)" --build-arg PYTHON_VERSION="$(PYTHON_VERSION)"
 	docker-compose -p integration_test -f tests/integration/setup/docker-compose.yml up --detach
-	BROKER_URL='amqp://admin:mypass@localhost:5672//' RESULT_BACKEND='redis://localhost:6379/0' PYTHONPATH="$$(pwd)/:$$(pwd)/tests/integration/setup/worker/src/app" py.test tests/integration
+	BROKER_URL='amqp://admin:mypass@localhost:5672//' RESULT_BACKEND='redis://localhost:6379/0' PYTHONPATH="$$(pwd)/:$$(pwd)/tests/integration/setup/worker/src/app" timeout 300 py.test -vs tests/integration
 	docker-compose -f tests/integration/setup/docker-compose.yml stop
 
 regen_license:
