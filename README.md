@@ -59,6 +59,8 @@ That's it, the idea is quite simple.
 - celery 3.1.25
 - celery 4.2.1
 - probably any celery 4.x
+- celery 5.2.7
+- probably any celery 5.x
 
 ## Integration
 ### Initialize workflows
@@ -161,4 +163,3 @@ wf.apply_async(options={'priority': 8})
 
 ## TODO
 - Proper documentation (e.g. sphinx)
-- Celery 5 support (should work out of box)

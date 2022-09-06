@@ -22,6 +22,7 @@ class TestTasks(object):
             mock.patch('celery_dyrygent.tasks.processor.workflow_processor')
         ) as mck:
             mck.__name__ = 'test-name'
+            mck.__annotations__ = []
             task = tasks.register_workflow_processor(app)
             task('test')
 

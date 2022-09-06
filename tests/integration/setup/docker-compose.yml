@@ -15,9 +15,9 @@ services:
     build:
       context: worker/
       args:
-        PYTHON_VERSION: '3.6'
-        CELERY_VERSION: '4.2.0'
-    command: ['celery', 'worker', '-A', 'app.app', '-l', 'info', '-f', 'celery.logs']
+        PYTHON_VERSION: '3.8'
+        CELERY_VERSION: '5.2.7'
+    command: ['celery', '-A', 'app.app', 'worker', '--loglevel', 'INFO', '-f', 'celery.logs']
     environment:
       - BROKER_URL=amqp://admin:mypass@rabbitmq:5672//
       - RESULT_BACKEND=redis://redis:6379/0
