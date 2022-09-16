@@ -1,6 +1,10 @@
 # Celery Dyrygent
 
-[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
+[![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
+[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
+[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Celery Supported](https://img.shields.io/badge/celery-4.2%2B-green)](https://docs.celeryq.dev/en/v4.2.0/whatsnew-4.2.html)
 [![Unit Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/ovh/celery-dyrygent/actions/workflows/unit-tests.yml)
 [![Integration Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/ovh/celery-dyrygent/actions/workflows/integration-tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/celery-dyrygent)](https://pypi.org/project/celery-dyrygent/)
@@ -56,11 +60,7 @@ That's it, the idea is quite simple.
 
 # How to use it?
 ## Which celery versions are supported?
-- celery 3.1.25
-- celery 4.2.1
-- probably any celery 4.x
-- celery 5.2.7
-- probably any celery 5.x
+- celery 4.2 and newer
 
 ## Integration
 ### Initialize workflows
