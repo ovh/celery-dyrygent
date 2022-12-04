@@ -1,27 +1,44 @@
-version: '3'
 services:
   rabbitmq:
     image: rabbitmq:alpine
     ports:
       - "5672:5672"
     environment:
-      - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=mypass
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: mypass
   redis:
     image: redis:alpine
     ports:
       - "6379:6379"
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'true'
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_DATABASE: celery
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: "mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD"
+      interval: 2s
+      retries: 20
   worker:
     build:
       context: worker/
       args:
-        PYTHON_VERSION: '3.8'
-        CELERY_VERSION: '5.2.7'
+        PYTHON_VERSION: '3'
+        CELERY_VERSION: '==5.2.7'
+        CELERY_BACKEND: 'redis'
     command: ['celery', '-A', 'app.app', 'worker', '--loglevel', 'INFO', '-f', 'celery.logs']
     environment:
-      - BROKER_URL=amqp://admin:mypass@rabbitmq:5672//
-      - RESULT_BACKEND=redis://redis:6379/0
-      - C_FORCE_ROOT=true
+      BROKER_URL: amqp://admin:mypass@rabbitmq//
+      RESULT_BACKEND: ${RESULT_BACKEND:-redis://redis/0}
+      C_FORCE_ROOT: 'true'
     depends_on:
-      - rabbitmq
-      - redis
+      rabbitmq:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started

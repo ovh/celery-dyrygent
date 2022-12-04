@@ -1,7 +1,14 @@
-Upcoming
+v0.9.0
 --------
-Tests: Added celery5 to test matrix
-Tests: Fixed unittests to work against celery5
+Added Python 3.10 support
+Remove Python 3.6 support due to Python 3.6 EOL
+
+Added celery5 support
+Drop celery3 support
+
+Tests: Integration tests for every supported Python version
+Tests: Integration tests for different celery versions
+Tests: Integration tests for two backends - redis and sqlalchemy(mysql)
 
 v0.8.0
 ------
