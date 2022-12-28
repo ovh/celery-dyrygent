@@ -15,6 +15,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: pip install tox==4.0.18
+        run: pip install tox==3.28.0
       - name: Run unit tests
         run: tox
