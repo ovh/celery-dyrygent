@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -15,6 +15,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
-        run: pip install tox
+        run: pip install tox==3.27.1
       - name: Run unit tests
         run: tox
