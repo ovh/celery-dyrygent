@@ -1,1 +1,2 @@
 celery>=4.2
+importlib-metadata==4.13.0
