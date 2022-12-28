@@ -1,9 +1,9 @@
 # Celery Dyrygent
 
-[![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-390/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 [![Celery Supported](https://img.shields.io/badge/celery-4.2%2B-green)](https://docs.celeryq.dev/en/v4.2.0/whatsnew-4.2.html)
 [![Unit Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/ovh/celery-dyrygent/actions/workflows/unit-tests.yml)
 [![Integration Tests](https://github.com/ovh/celery-dyrygent/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/ovh/celery-dyrygent/actions/workflows/integration-tests.yml)
