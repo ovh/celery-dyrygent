@@ -17,7 +17,7 @@ Celery-dyrygent is released under modified BSD license. See [license](LICENSE)
 
 ## What is it?
 The reasons behind this project so as the implementation details were described in the following blogpost
-https://www.ovh.com/blog/doing-big-automation-with-celery/
+[https://www.ovh.com/blog/doing-big-automation-with-celery/](https://blog.ovhcloud.com/doing-big-automation-with-celery/)
 
 ### What is a DAG workflow?
 DAG is a shortcut for Directed Acyclic Graph.
