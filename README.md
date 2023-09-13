@@ -53,7 +53,7 @@ That's it, the idea is quite simple.
 - it's possible to track progress through signals (might need to implement a new signal for each tick)
 
 ### Drawbacks
-- At the moment workflow processor doesn't pass task results from precedign tasks to following tasks (can be implemented, not implemented at the moment).
+- At the moment workflow processor doesn't pass task results from preceding tasks to following tasks (can be implemented, not implemented at the moment).
 - Workflow processor task is doing repeating ticks (like celery chord unlock) and new tasks are scheduled only within the ticks. This may result in noticeably longer execution time of task chains (e.g. if ticks are done each 2s, next task in chain will only be each 2s)
 - Reliable result backend has to be enabled
 
